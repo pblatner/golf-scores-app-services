@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pjblat.golfscoresappservices.dao.CourseDaoService;
 import com.pjblat.golfscoresappservices.domain.Course;
+import com.pjblat.golfscoresappservices.exception.CourseNotFoundException;
 
 /*
  * 
@@ -42,5 +44,16 @@ public class GolfScoresController
 	public List<Course> retrieveAllCourses() 
 	{
 		return service.findAll();
+	}
+	
+	@GetMapping("/courses/{id}")
+	public Course retrieveCourse(@PathVariable int id) 
+	{
+		Course c = service.findOne(id);
+		if (c == null) {
+			throw new CourseNotFoundException("id-"+id);
+		}
+		
+		return c;
 	}
 }

@@ -1,0 +1,14 @@
+type Query {
+  courseById(id: ID): Course 
+}
+
+type Course {
+  id: ID
+  name: String
+  holes: [Hole]
+}
+
+type Hole {
+  id: ID
+  holeNumber: Int
+}
