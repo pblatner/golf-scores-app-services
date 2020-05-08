@@ -84,9 +84,9 @@ public class GraphQLDataFetchers
 		c1teeSets.add(c1ts4);
 
 		List<Hole> c1Holes = new ArrayList<Hole>();
-		c1Holes.add(new Hole(1, 1, c1h1yardages));
-		c1Holes.add(new Hole(2, 2, c1h2yardages));
-		c1Holes.add(new Hole(3, 3, c1h3yardages));
+		c1Holes.add(new Hole(1, 1, 3));
+		c1Holes.add(new Hole(2, 2, 5));
+		c1Holes.add(new Hole(3, 3, 4));
 
 		tf.setSetsOfTees(c1teeSets);
 		tf.setHoles(c1Holes);

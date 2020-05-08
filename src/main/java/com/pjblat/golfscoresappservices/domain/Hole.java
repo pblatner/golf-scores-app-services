@@ -1,19 +1,17 @@
 package com.pjblat.golfscoresappservices.domain;
 
-import java.util.List;
-
 public class Hole
 {
 	private Integer id;
 	private Integer holeNumber;
-	private List<HoleYardage> yardages;
+	private Integer basePar;
 	
-	public Hole(Integer id, Integer holeNumber, List<HoleYardage> yardages)
+	public Hole(Integer id, Integer holeNumber, Integer basePar)
 	{
 		super();
 		this.id = id;
 		this.holeNumber = holeNumber;
-		this.yardages = yardages;
+		this.basePar = basePar;
 	}
 	public Hole()
 	{
@@ -28,14 +26,6 @@ public class Hole
 	{
 		this.id = id;
 	}
-	public List<HoleYardage> getYardages()
-	{
-		return yardages;
-	}
-	public void setYardages(List<HoleYardage> yardages)
-	{
-		this.yardages = yardages;
-	}
 	public Integer getHoleNumber()
 	{
 		return holeNumber;
@@ -43,6 +33,14 @@ public class Hole
 	public void setHoleNumber(Integer holeNumber)
 	{
 		this.holeNumber = holeNumber;
+	}
+	public Integer getBasePar()
+	{
+		return basePar;
+	}
+	public void setBasePar(Integer basePar)
+	{
+		this.basePar = basePar;
 	}
 	
 	
