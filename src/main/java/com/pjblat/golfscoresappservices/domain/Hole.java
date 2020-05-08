@@ -1,5 +1,7 @@
 package com.pjblat.golfscoresappservices.domain;
 
+// Adding some comment
+
 public class Hole
 {
 	private Integer id;
