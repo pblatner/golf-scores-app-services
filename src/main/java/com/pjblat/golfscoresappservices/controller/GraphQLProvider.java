@@ -33,6 +33,7 @@ public class GraphQLProvider
 		return graphQL;
 	}
 
+	/*
 	@PostConstruct
 	public void init() throws IOException
 	{
@@ -48,7 +49,7 @@ public class GraphQLProvider
 	private GraphQLSchema buildSchema(String sdl)
 	{
 		TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
-		RuntimeWiring runtimeWiring = buildWiring();
+		//RuntimeWiring runtimeWiring = buildWiring();
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 		return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
 	}
@@ -59,5 +60,5 @@ public class GraphQLProvider
 				.type(newTypeWiring("Query").dataFetcher("courseById", graphQLDataFetchers.getCourseByIdDataFetcher()))
 				.type(newTypeWiring("Course").dataFetcher("holes", graphQLDataFetchers.getHolesDataFetcher())).build();
 	}
-
+	*/
 }

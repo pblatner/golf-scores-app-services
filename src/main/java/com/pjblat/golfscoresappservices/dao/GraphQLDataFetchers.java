@@ -16,12 +16,17 @@ import graphql.schema.DataFetcher;
 @Component
 public class GraphQLDataFetchers
 {
+	/*
+	 * used for in memory testing of the services prior to DB implementation private
 	private static List<Course> courses = new ArrayList<>();
 	private static int coursesCount = 2;
+	*/
 
+	/*
+	 * used for in memory testing of the services prior to DB implementation private
 	static
 	{
-		Course tf = new Course(1, "Tanna Farms", new ArrayList<TeeSet>(), new ArrayList<Hole>());
+		Course tf = new Course(1, "Tanna Farms");
 
 		List<HoleYardage> c1h1yardages = new ArrayList<HoleYardage>();
 		HoleYardage h1t1 = new HoleYardage(1001, 1, 4, 400);
@@ -88,11 +93,9 @@ public class GraphQLDataFetchers
 		c1Holes.add(new Hole(2, 2, 5));
 		c1Holes.add(new Hole(3, 3, 4));
 
-		tf.setSetsOfTees(c1teeSets);
-		tf.setHoles(c1Holes);
-
 		courses.add(tf);
 	}
+	
 
 	public DataFetcher<Course> getCourseByIdDataFetcher()
 	{
@@ -105,7 +108,9 @@ public class GraphQLDataFetchers
 					.orElse(null);
 		};
 	}
+	*/
 	
+	/*
 	public DataFetcher<List<Hole>> getHolesDataFetcher() {
         return dataFetchingEnvironment -> {
             Course c = dataFetchingEnvironment.getSource();
@@ -113,5 +118,6 @@ public class GraphQLDataFetchers
             return holes;
         };
     }
+    */
 
 }

@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "course")
@@ -17,24 +18,17 @@ public class Course
 	@GeneratedValue
 	private Integer id;
 	
+	@NotNull
 	@Column(name = "name")
 	private String name;
 	// eventually add in an address
 	// private Address address;
 	
-	@Transient
-	private List<TeeSet> setsOfTees;
-	
-	@Transient
-	private List<Hole> holes;
-	
-	public Course(Integer id, String name, List<TeeSet> setsOfTees, List<Hole> holes)
+	public Course(Integer id, String name)
 	{
 		super();
 		this.id = id;
 		this.name = name;
-		this.setsOfTees = setsOfTees;
-		this.holes = holes;
 	}
 	public Course()
 	{
@@ -57,21 +51,4 @@ public class Course
 	{
 		this.name = name;
 	}
-	public List<TeeSet> getSetsOfTees()
-	{
-		return setsOfTees;
-	}
-	public void setSetsOfTees(List<TeeSet> setsOfTees)
-	{
-		this.setsOfTees = setsOfTees;
-	}
-	public List<Hole> getHoles()
-	{
-		return holes;
-	}
-	public void setHoles(List<Hole> holes)
-	{
-		this.holes = holes;
-	}
-	
 }
