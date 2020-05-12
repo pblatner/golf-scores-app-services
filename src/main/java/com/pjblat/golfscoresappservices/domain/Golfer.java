@@ -1,15 +1,32 @@
 package com.pjblat.golfscoresappservices.domain;
 
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+@Entity
+@Table(name = "golfer")
 public class Golfer
 {
+	@Id
+	@GeneratedValue
 	private Integer id;
-	private String firstName;
-	private String lastName;
-	private String emailAddress;
 	
-	private List<Round> roundsPlayed;
+	@NotNull
+	@Column(name = "first_name")
+	private String firstName;
+	
+	@NotNull
+	@Column(name = "last_name")
+	private String lastName;
+	
+	@NotNull
+	@Column(name = "email_address")
+	private String emailAddress;
+
 	
 	public Golfer(Integer id, String firstName, String lastName, String emailAddress)
 	{
@@ -63,16 +80,6 @@ public class Golfer
 	public void setEmailAddress(String emailAddress)
 	{
 		this.emailAddress = emailAddress;
-	}
-
-	public List<Round> getRoundsPlayed()
-	{
-		return roundsPlayed;
-	}
-
-	public void setRoundsPlayed(List<Round> roundsPlayed)
-	{
-		this.roundsPlayed = roundsPlayed;
 	}
 	
 	
