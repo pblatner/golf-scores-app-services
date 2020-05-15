@@ -30,4 +30,10 @@ public class GolferDaoService
 	{
 		return entityManager.find(Golfer.class, id);
 	}
+	
+	public Golfer createGolfer(Golfer newGolfer)
+	{
+		entityManager.persist(newGolfer);
+		return newGolfer;	
+	}
 }

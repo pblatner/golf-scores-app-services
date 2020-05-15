@@ -3,25 +3,35 @@ package com.pjblat.golfscoresappservices.controller;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.awt.geom.RoundRectangle2D;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pjblat.golfscoresappservices.dao.CourseDaoService;
 import com.pjblat.golfscoresappservices.dao.GolferDaoService;
 import com.pjblat.golfscoresappservices.dao.HoleRepository;
 import com.pjblat.golfscoresappservices.dao.HoleYardageRepository;
+import com.pjblat.golfscoresappservices.dao.RoundRepository;
 import com.pjblat.golfscoresappservices.dao.TeeSetRepository;
 import com.pjblat.golfscoresappservices.domain.Course;
 import com.pjblat.golfscoresappservices.domain.Golfer;
 import com.pjblat.golfscoresappservices.domain.Hole;
 import com.pjblat.golfscoresappservices.domain.HoleYardage;
+import com.pjblat.golfscoresappservices.domain.Round;
 import com.pjblat.golfscoresappservices.domain.TeeSet;
 import com.pjblat.golfscoresappservices.exception.CourseNotFoundException;
 import com.pjblat.golfscoresappservices.exception.GolferNotFoundException;
@@ -58,6 +68,13 @@ import com.pjblat.golfscoresappservices.exception.GolferNotFoundException;
  *   
  * - Create a round score for a single golfer with individual hole scores
  * 
+ * - GET /rounds
+ *   - get a list of all the rounds
+ *   
+ * TODOS
+ * - add service to create a round
+ * - add computed average to the get golfer API
+ * - add a computed average to the get course API
  *
  */
 
@@ -66,13 +83,16 @@ public class GolfScoresController
 {
 	@Autowired
 	private CourseDaoService service;
-	
+
 	@Autowired
 	private GolferDaoService golferService;
-	
+
 	@Autowired
 	private TeeSetRepository teeSetRepository;
 	
+	@Autowired
+	private RoundRepository roundRepository;
+
 	@Autowired
 	private HoleYardageRepository holeYardageRepository;
 
@@ -129,7 +149,7 @@ public class GolfScoresController
 				linkTo(methodOn(GolfScoresController.class).retrieveHolesForCourse(courseId)).withSelfRel(),
 				linkTo(methodOn(GolfScoresController.class).retrieveCourse(courseId)).withRel("holes"));
 	}
-	
+
 	@GetMapping("/courses/{courseId}/tee-sets")
 	public CollectionModel<EntityModel<TeeSet>> retrieveTeeSetsForCourse(@PathVariable int courseId)
 	{
@@ -146,9 +166,10 @@ public class GolfScoresController
 				linkTo(methodOn(GolfScoresController.class).retrieveTeeSetsForCourse(courseId)).withSelfRel(),
 				linkTo(methodOn(GolfScoresController.class).retrieveCourse(courseId)).withRel("course"));
 	}
-	
+
 	@GetMapping("/courses/{courseId}/tee-sets/{teeSetId}")
-	public CollectionModel<EntityModel<HoleYardage>> retrieveHoleYardagesForCourseAndTeeSet(@PathVariable int courseId, @PathVariable int teeSetId)
+	public CollectionModel<EntityModel<HoleYardage>> retrieveHoleYardagesForCourseAndTeeSet(@PathVariable int courseId,
+			@PathVariable int teeSetId)
 	{
 		List<HoleYardage> holeYardages = holeYardageRepository.findByTeeSetId(teeSetId);
 		if (holeYardages == null || holeYardages.size() == 0)
@@ -160,12 +181,14 @@ public class GolfScoresController
 				.collect(Collectors.toList());
 
 		return new CollectionModel<>(emHoleYardages,
-				linkTo(methodOn(GolfScoresController.class).retrieveHoleYardagesForCourseAndTeeSet(courseId, teeSetId)).withSelfRel(),
+				linkTo(methodOn(GolfScoresController.class).retrieveHoleYardagesForCourseAndTeeSet(courseId, teeSetId))
+						.withSelfRel(),
 				linkTo(methodOn(GolfScoresController.class).retrieveCourse(courseId)).withRel("course"));
 	}
-	
+
 	@GetMapping("/courses/{courseId}/tee-sets-name/{teeSetName}")
-	public CollectionModel<EntityModel<HoleYardage>> retrieveHoleYardagesForCourseAndTeeSetName(@PathVariable int courseId, @PathVariable String teeSetName)
+	public CollectionModel<EntityModel<HoleYardage>> retrieveHoleYardagesForCourseAndTeeSetName(
+			@PathVariable int courseId, @PathVariable String teeSetName)
 	{
 		List<HoleYardage> holeYardages = holeYardageRepository.findByCourseIdAndTeeSetName(courseId, teeSetName);
 		if (holeYardages == null || holeYardages.size() == 0)
@@ -177,8 +200,10 @@ public class GolfScoresController
 				.collect(Collectors.toList());
 
 		return new CollectionModel<>(emHoleYardages,
-				linkTo(methodOn(GolfScoresController.class).retrieveHoleYardagesForCourseAndTeeSetName(courseId, teeSetName)).withSelfRel(),
-				linkTo(methodOn(GolfScoresController.class).retrieveHolesForCourse(courseId)).withRel("holes for course"),
+				linkTo(methodOn(GolfScoresController.class).retrieveHoleYardagesForCourseAndTeeSetName(courseId,
+						teeSetName)).withSelfRel(),
+				linkTo(methodOn(GolfScoresController.class).retrieveHolesForCourse(courseId))
+						.withRel("holes for course"),
 				linkTo(methodOn(GolfScoresController.class).retrieveCourse(courseId)).withRel("course"));
 	}
 
@@ -199,7 +224,7 @@ public class GolfScoresController
 		return new CollectionModel<>(emGolfers,
 				linkTo(methodOn(GolfScoresController.class).retrieveAllGolfers()).withSelfRel());
 	}
-	
+
 	@GetMapping("/golfers/{id}")
 	public EntityModel<Golfer> retrieveGolfer(@PathVariable int id)
 	{
@@ -214,5 +239,40 @@ public class GolfScoresController
 		// Sample from https://spring.io/guides/tutorials/rest/
 		return new EntityModel<>(g, linkTo(methodOn(GolfScoresController.class).retrieveGolfer(id)).withSelfRel(),
 				linkTo(methodOn(GolfScoresController.class).retrieveAllGolfers()).withRel("golfers"));
+	}
+
+	// input - details of golfer
+	// output - CREATED and return the created URI
+	@PostMapping("/golfers")
+	public ResponseEntity<?> createUser(@Valid @RequestBody Golfer newGolfer)
+	{
+		Golfer savedGolfer = golferService.createGolfer(newGolfer);
+		System.out.println(savedGolfer);
+		
+		// return CREATED status
+		// return the URI of the created object
+		// /users/{id} - savedUser.getId()
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedGolfer.getId())
+				.toUri();
+
+		// return new ResponseEntity<>(location, HttpStatus.CREATED);
+		return ResponseEntity.created(location).build();
+	}
+	
+	@GetMapping("/rounds")
+	public CollectionModel<EntityModel<Round>> retrieveAllRounds()
+	{
+		List<Round> rounds = roundRepository.findAll();
+
+		// New School way to build the List of Entity Models using streams and a lambda
+		// function.
+		// Sample from https://spring.io/guides/tutorials/rest/
+		List<EntityModel<Round>> emGolfers = rounds.stream()
+				.map(round -> new EntityModel<>(round,
+						linkTo(methodOn(GolfScoresController.class).retrieveAllRounds()).withRel("rounds")))
+				.collect(Collectors.toList());
+
+		return new CollectionModel<>(emGolfers,
+				linkTo(methodOn(GolfScoresController.class).retrieveAllRounds()).withSelfRel());
 	}
 }
